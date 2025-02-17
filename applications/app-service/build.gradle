@@ -1,0 +1,45 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation 'software.amazon.awssdk:sts'
+    // Infrastructure - Helper
+    implementation project(':validator')
+    implementation project(':r2dbc')
+    implementation project( ':sqs-sender')
+
+    // Infrastructure - Entry-Points
+    implementation project( ':reactive-web')
+
+    // Domain
+    implementation project(':model')
+    implementation project(':usecase')
+
+    testImplementation 'com.tngtech.archunit:archunit:1.3.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation "org.reactivecommons.utils:object-mapper:${objectMapperVersion}"
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation "org.springframework.ws:spring-ws-security:${springWsSecurityVersion}"
+    implementation 'org.springframework.security:spring-security-core'
+
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation "com.tngtech.archunit:archunit:${archunitVersion}"
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+
+}
+
+tasks.register('explodedJar', Copy) {
+    with jar
+    into "${buildDir}/exploded"
+}
+
+jar {
+    // To disable the *-plain.jar
+    enabled = false
+}
+
+bootJar {
+    // Sets output jar name
+    archiveFileName = "${project.getParent().getName()}.${archiveExtension.get()}"
+}

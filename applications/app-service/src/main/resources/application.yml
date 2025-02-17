@@ -1,0 +1,134 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, loggers, mappings, beans
+      base-path: /
+      path-mapping:
+        health: actuator/health
+        beans: actuator/beans
+        metrics: actuator/metrics
+        mappings: actuator/mappings
+        loggers: actuator/loggers
+  endpoint:
+    health:
+      probes:
+        enabled: false
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+    ping:
+      enabled: false
+    refresh:
+      enabled: false
+    r2dbc:
+      enabled: true
+server:
+  port: 8083
+
+spring:
+  application:
+    name: reto-tecnico
+  devtools:
+    add-properties: false
+  main:
+    lazy-initialization: true
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+  flyway:
+    enabled: true
+    url: jdbc:mysql://127.0.0.1:3306/seek
+    user: root
+    password: 4kll2ni19h
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+logging:
+  level:
+    level: DEBUG
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /api-docs/reto-tecnico/index.html
+  webjars:
+    prefix: /docs
+  disable-swagger-default-url: true
+  api-docs:
+    enabled: true
+    path: /api-docs/reto-tecnico
+jwt:
+  secret: "ae4f79f42b43f10fc6db192e9a8728980f6d88d4d347ff8702ea13cf2ebdd7e5dcc7e794c203da36aa38bf9098290e503a497e3e8eb1cfacc4b6d0ff11fb1c5227d7dae1b3ef6ad12a1e998f836b47a7a83afa06ab8f0debbc6ab8b41d4b60db422df6562bf2fda9c841e8b80a7ca06d590a30287cf84a25ad2b426bcaa1fdb2034826e27036f61bc220b07bc1ee2aeab3920b0e41b05a6b626d5dc673ff322de0c8ed0d62529c27aa7dc1365a90b2166ac57d12b0852f8e993feef5bab0e23f5d85dd01de693c60e84bebc90f5e935b57025e8b31e33c876925aad0d42180c2ad7af8173c85246a6c68fd0ae83d133136195108333895e9a268e701bbf8ac62"
+  expiration: 3600000
+adapter:
+  r2dbc:
+    mysql:
+      url: "${DB_URL:r2dbc:mysql://root:4kll2ni19h@127.0.0.1:3306/seek}"
+  aws:
+    sqs:
+      region: us-east-1
+      queueUrl: https://sqs.us-east-1.amazonaws.com/242201280935/SQSSeek
+resilience4j.circuitbreaker:
+  circuit-breaker-aspect-order: 1
+  configs:
+    default:
+      register-health-indicator: true
+  instances:
+    saveCustomer:
+      base-config: "default"
+      failure-rate-threshold: "${VR_FAILURE_RATE_THRESHOLD:50}"
+      slow-call-rate-threshold: "${VR_SLOW_CALL_RATE_THRESHOLD:50}"
+      slow-call-duration-threshold: "${VR_SLOW_CALL_DURATION_THRESHOLD:2s}"
+      sliding-window-type: "${VR_SLIDING_WINDOW_TYPE:COUNT_BASED}"
+      sliding-window-size: "${VR_SLIDING_WINDOW_SIZE:5}"
+      minimum-number-of-calls: "${VR_MIN_NUMBER_CALLS:5}"
+      wait-duration-in-open-state: "${VR_WAIT_DURATION_OPEN_STATE:25s}"
+      max-wait-duration-in-half-open-state: "${VR_MAX_WAIT_DURATION_HALF_OPEN_STATE:10s}"
+      permitted-number-of-calls-in-half-open-state: "${VR_PERMITTED_CALLS_HALF_OPEN_STATE:3}"
+      automatic-transition-from-open-to-half-open-enabled: "${VR_AUTO_TRANS_OPEN_TO_HALF_OPEN_STATE:false}"
+      record-exceptions: "${VR_RECORD_EXCEPTIONS:}"
+      ignore-exceptions: "${VR_IGNORE_EXCEPTIONS:}"
+    generateToken:
+      base-config: "default"
+      failure-rate-threshold: "${GT_FAILURE_RATE_THRESHOLD:50}"
+      slow-call-rate-threshold: "${GT_SLOW_CALL_RATE_THRESHOLD:50}"
+      slow-call-duration-threshold: "${GT_SLOW_CALL_DURATION_THRESHOLD:2s}"
+      sliding-window-type: "${GT_SLIDING_WINDOW_TYPE:COUNT_BASED}"
+      sliding-window-size: "${GT_SLIDING_WINDOW_SIZE:5}"
+      minimum-number-of-calls: "${GT_MIN_NUMBER_CALLS:5}"
+      wait-duration-in-open-state: "${GT_WAIT_DURATION_OPEN_STATE:25s}"
+      max-wait-duration-in-half-open-state: "${GT_MAX_WAIT_DURATION_HALF_OPEN_STATE:10s}"
+      permitted-number-of-calls-in-half-open-state: "${GT_PERMITTED_CALLS_HALF_OPEN_STATE:3}"
+      automatic-transition-from-open-to-half-open-enabled: "${GT_AUTO_TRANS_OPEN_TO_HALF_OPEN_STATE:false}"
+      record-exceptions: "${GT_RECORD_EXCEPTIONS:}"
+      ignore-exceptions: "${GT_IGNORE_EXCEPTIONS:}"
+    getCustomerMetrics:
+      base-config: "default"
+      failure-rate-threshold: "${GM_FAILURE_RATE_THRESHOLD:50}"
+      slow-call-rate-threshold: "${GM_SLOW_CALL_RATE_THRESHOLD:50}"
+      slow-call-duration-threshold: "${GM_SLOW_CALL_DURATION_THRESHOLD:2s}"
+      sliding-window-type: "${GM_SLIDING_WINDOW_TYPE:COUNT_BASED}"
+      sliding-window-size: "${GM_SLIDING_WINDOW_SIZE:5}"
+      minimum-number-of-calls: "${GM_MIN_NUMBER_CALLS:5}"
+      wait-duration-in-open-state: "${GM_WAIT_DURATION_OPEN_STATE:25s}"
+      max-wait-duration-in-half-open-state: "${GM_MAX_WAIT_DURATION_HALF_OPEN_STATE:10s}"
+      permitted-number-of-calls-in-half-open-state: "${GM_PERMITTED_CALLS_HALF_OPEN_STATE:3}"
+      automatic-transition-from-open-to-half-open-enabled: "${GM_AUTO_TRANS_OPEN_TO_HALF_OPEN_STATE:false}"
+      record-exceptions: "${GM_RECORD_EXCEPTIONS:}"
+      ignore-exceptions: "${GM_IGNORE_EXCEPTIONS:}"
+    getCustomers:
+      base-config: "default"
+      failure-rate-threshold: "${GC_FAILURE_RATE_THRESHOLD:50}"
+      slow-call-rate-threshold: "${GC_SLOW_CALL_RATE_THRESHOLD:50}"
+      slow-call-duration-threshold: "${GC_SLOW_CALL_DURATION_THRESHOLD:2s}"
+      sliding-window-type: "${GC_SLIDING_WINDOW_TYPE:COUNT_BASED}"
+      sliding-window-size: "${GC_SLIDING_WINDOW_SIZE:5}"
+      minimum-number-of-calls: "${GC_MIN_NUMBER_CALLS:5}"
+      wait-duration-in-open-state: "${GC_WAIT_DURATION_OPEN_STATE:25s}"
+      max-wait-duration-in-half-open-state: "${GC_MAX_WAIT_DURATION_HALF_OPEN_STATE:10s}"
+      permitted-number-of-calls-in-half-open-state: "${GC_PERMITTED_CALLS_HALF_OPEN_STATE:3}"
+      automatic-transition-from-open-to-half-open-enabled: "${GC_AUTO_TRANS_OPEN_TO_HALF_OPEN_STATE:false}"
+      record-exceptions: "${GC_RECORD_EXCEPTIONS:}"
+      ignore-exceptions: "${GC_IGNORE_EXCEPTIONS:}"

@@ -1,0 +1,58 @@
+buildscript {
+	ext {
+		modelModule = 'model'
+		useCaseModule = 'usecase'
+
+		springBootVersion = '3.3.5'
+		sonarVersion = '2.6'
+		jacocoVersion = '0.8.11'
+		lombokVersion = '1.18.30'
+		ssmVersion = '2.14.6'
+		objectMapperVersion = '0.1.0'
+		mapstructVersion = '1.5.5.Final'
+		jacksonDataformatXmlVersion = '2.13.4'
+		logstashLogbackVersion = '7.3'
+		logbackVersion = '1.4.12'
+		micrometerCoreVersion = '1.0.6'
+		okhttp3Version = '4.9.3'
+		openapiUIVersion = '2.1.0'
+		locatorCoreVersion = '0.52'
+		resilience4jVersion = '1.7.0'
+		micrometerTracingVersion = '1.1.1'
+		bouncycastleVersion = '1.70'
+		commonsLang3Version = '3.12.0'
+		springWsSecurityVersion = '4.0.3'
+		R2dbcMysqlVersion = '2.2.4'
+		archunitVersion = '1.1.1'
+		jsonVersion = '20231013'
+		flywayCore = '10.0.0'
+		flywayCoreMysql = '10.13.0'
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version "${springBootVersion}" apply false
+	id 'org.sonarqube' version "${sonarVersion}"
+	id 'jacoco'
+	id 'org.flywaydb.flyway' version "${flywayCore}"
+}
+
+sonarqube {
+	def modules = subprojects.projectDir.collect { "${it.toString().replace(project.projectDir.toString() + "/", "")}" }
+	properties {
+		property "sonar.sourceEnconding", "UTF-8"
+		property "sonar.modules", "${modules.join(',')}"
+		property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle,${modules.collect { "${it}/build.gradle" }.join(',')}"
+		property "sonar.exclusions","**/MainApplication.java"
+		property "sonar.test", "src/test"
+		property "sonar.java.binaries", ""
+		property "sonar.junit.reportsPath", ""
+		property "sonar.java.coveragePlugin", "jacoco"
+		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+		property "sonar.externalIssuesReportPaths", "build/issues.json"
+		property "sonar.exclusions", "**/deployment/**,*/applications/app-service/**,**/applications/app-service/src/main/java/**," +
+				"**/infrastructure/entry-points/reactive-web/src/main/java/co/com/nequi/api/dto/response/**"
+	}
+}
+
+apply from: './main.gradle'
