@@ -41,9 +41,9 @@ spring:
           enabled: false
   flyway:
     enabled: true
-    url: jdbc:mysql://127.0.0.1:3306/seek
-    user: root
-    password: 4kll2ni19h
+    url: "${FLYWAY_URL:jdbc:mysql://127.0.0.1:3306/seek}"
+    user: "${FLYWAY_USER:root}"
+    password: "${FLYWAY_PWD:4kll2ni19h}"
     locations: classpath:db/migration
     baseline-on-migrate: true
 logging:
@@ -60,7 +60,7 @@ springdoc:
     enabled: true
     path: /api-docs/reto-tecnico
 jwt:
-  secret: "ae4f79f42b43f10fc6db192e9a8728980f6d88d4d347ff8702ea13cf2ebdd7e5dcc7e794c203da36aa38bf9098290e503a497e3e8eb1cfacc4b6d0ff11fb1c5227d7dae1b3ef6ad12a1e998f836b47a7a83afa06ab8f0debbc6ab8b41d4b60db422df6562bf2fda9c841e8b80a7ca06d590a30287cf84a25ad2b426bcaa1fdb2034826e27036f61bc220b07bc1ee2aeab3920b0e41b05a6b626d5dc673ff322de0c8ed0d62529c27aa7dc1365a90b2166ac57d12b0852f8e993feef5bab0e23f5d85dd01de693c60e84bebc90f5e935b57025e8b31e33c876925aad0d42180c2ad7af8173c85246a6c68fd0ae83d133136195108333895e9a268e701bbf8ac62"
+  secret: "${JWT_TOKEN:ae4f79f42b43f10fc6db192e9a8728980f6d88d4d347ff8702ea13cf2ebdd7e5dcc7e794c203da36aa38bf9098290e503a497e3e8eb1cfacc4b6d0ff11fb1c5227d7dae1b3ef6ad12a1e998f836b47a7a83afa06ab8f0debbc6ab8b41d4b60db422df6562bf2fda9c841e8b80a7ca06d590a30287cf84a25ad2b426bcaa1fdb2034826e27036f61bc220b07bc1ee2aeab3920b0e41b05a6b626d5dc673ff322de0c8ed0d62529c27aa7dc1365a90b2166ac57d12b0852f8e993feef5bab0e23f5d85dd01de693c60e84bebc90f5e935b57025e8b31e33c876925aad0d42180c2ad7af8173c85246a6c68fd0ae83d133136195108333895e9a268e701bbf8ac62}"
   expiration: 3600000
 adapter:
   r2dbc:
