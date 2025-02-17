@@ -101,7 +101,7 @@ La **base de datos MySQL** se despliega en **RDS** (Amazon Relational Database S
 
 #### Dirección del Servicio:
 
-- **Host Actual**: `100.26.242.0:8083` (Este puede variar según la configuración de tu red).
+- **Host Actual**: `100.26.242.0:8083` (Despliegue actual en AWS adjunto, puede variar).
 
 ### Variables de Entorno
 
