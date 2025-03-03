@@ -41,14 +41,15 @@ spring:
           enabled: false
   flyway:
     enabled: true
-    url: "${FLYWAY_URL:jdbc:mysql://127.0.0.1:3306/seek}"
-    user: "${FLYWAY_USER:root}"
-    password: "${FLYWAY_PWD:4kll2ni19h}"
+    url: "${FLYWAY_URL:jdbc:mysql://seek.cj240cauubpl.us-east-1.rds.amazonaws.com:3306/seek}"
+    user: "${FLYWAY_USER:admin}"
+    password: "${FLYWAY_PWD:G4kll2ni19h}"
     locations: classpath:db/migration
     baseline-on-migrate: true
 logging:
   level:
-    level: DEBUG
+    org:
+      springframework: INFO
 springdoc:
   swagger-ui:
     enabled: true
@@ -65,7 +66,7 @@ jwt:
 adapter:
   r2dbc:
     mysql:
-      url: "${DB_URL:r2dbc:mysql://root:4kll2ni19h@127.0.0.1:3306/seek}"
+      url: "${DB_URL:r2dbc:mysql://admin:G4kll2ni19h@seek.cj240cauubpl.us-east-1.rds.amazonaws.com:3306/seek?allowPublicKeyRetrieval=true&useSSL=false}"
   aws:
     sqs:
       region: us-east-1

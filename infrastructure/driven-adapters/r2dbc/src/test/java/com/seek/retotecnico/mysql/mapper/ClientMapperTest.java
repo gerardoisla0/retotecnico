@@ -1,7 +1,7 @@
 package com.seek.retotecnico.mysql.mapper;
 
-import com.seek.retotecnico.mysql.model.CustomerData;
-import com.seek.retotecnico.model.customer.Customer;
+import com.seek.retotecnico.model.user.User;
+import com.seek.retotecnico.mysql.model.UserData;
 import org.junit.jupiter.api.Test;
 
 
@@ -10,17 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class SecurityMapperTest {
 
-    CustomerMapper mapper = CustomerMapper.MAPPER;
+    UserMapper mapper = UserMapper.MAPPER;
 
     @Test
     void shouldMapClientDomainToClientData() {
-        Customer cliente = com.seek.retotecnico.model.customer.Customer
+        User cliente = User
                 .builder()
                 .name("Julio")
                 .lastName("Isla")
                 .build();
 
-        CustomerData data = mapper.domainToData(cliente);
+        UserData data = mapper.domainToData(cliente);
 
         assertEquals("Julio", data.getName());
         assertEquals("Isla", data.getLastName());
@@ -29,7 +29,7 @@ class SecurityMapperTest {
     @Test
     void shouldGetErrorWithNullSecurity() {
 
-        CustomerData data = mapper.domainToData(null);
+        UserData data = mapper.domainToData(null);
 
         assertNull(data);
     }

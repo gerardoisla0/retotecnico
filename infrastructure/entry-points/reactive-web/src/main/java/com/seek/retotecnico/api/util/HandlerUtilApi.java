@@ -1,9 +1,9 @@
 package com.seek.retotecnico.api.util;
 
-import com.seek.retotecnico.api.dto.response.CreateCustomerResponseApi;
+import com.seek.retotecnico.api.dto.response.SeekResponseApi;
+import com.seek.retotecnico.api.dto.response.structure.body.AuthResponseApi;
 import com.seek.retotecnico.api.dto.response.structure.body.error.ErrorDetail;
 import com.seek.retotecnico.model.util.exception.BusinessException;
-import com.seek.retotecnico.api.dto.response.GenerateTokenResponseApi;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import com.seek.retotecnico.model.util.enums.Operation;
 import lombok.experimental.UtilityClass;
@@ -30,8 +30,8 @@ public class HandlerUtilApi {
             return Operation.CUSTOMER;
         }
     }
-    public static Mono<ServerResponse> buildResponseService(CreateCustomerResponseApi createCustomerResponseApi,
-            String nameOperation, List<ErrorDetail> errorDetails, Exception exception, BusinessException businessException) {
+    public static Mono<ServerResponse> buildResponseService(SeekResponseApi seekResponseApi,
+                                                            String nameOperation, List<ErrorDetail> errorDetails, Exception exception, BusinessException businessException) {
 
         Operation operation = HandlerUtilApi.getOperationByName(nameOperation);
 
@@ -43,17 +43,17 @@ public class HandlerUtilApi {
                     kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorDetailsRS"), errorDetails));
             return ServerResponse
                     .status(HttpStatus.BAD_REQUEST)
-                    .bodyValue(createCustomerResponseApi);
+                    .bodyValue(seekResponseApi);
         }
 
         if (Objects.nonNull(businessException)) {
             log.info(operation.getNameResponse().replace(NAME_RESPONSE, "Error Business Response"),
-                    kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorRS"), createCustomerResponseApi),
+                    kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorRS"), seekResponseApi),
                     kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorBusinessRS"), businessException));
 
             return ServerResponse
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .bodyValue(createCustomerResponseApi);
+                    .bodyValue(seekResponseApi);
 
         } else if (Objects.nonNull(exception)) {
 
@@ -63,23 +63,23 @@ public class HandlerUtilApi {
             kv = isOpen ? "ErrorFallbackOpenRS" : "ErrorFallbackRS";
 
             log.info(operation.getNameResponse().replace(NAME_RESPONSE, nameError),
-                    kv(operation.getKvResponse().replace(KV_RESPONSE, kv), createCustomerResponseApi),
+                    kv(operation.getKvResponse().replace(KV_RESPONSE, kv), seekResponseApi),
                     kv(operation.getKvResponse().replace(KV_RESPONSE, kv), exception));
 
             return ServerResponse
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .bodyValue(createCustomerResponseApi);
+                    .bodyValue(seekResponseApi);
         } else {
-            log.info(operation.getNameResponse(), kv(operation.getKvResponse(), createCustomerResponseApi));
+            log.info(operation.getNameResponse(), kv(operation.getKvResponse(), seekResponseApi));
         }
 
         return ServerResponse
                 .status(HttpStatus.OK)
-                .bodyValue(createCustomerResponseApi);
+                .bodyValue(seekResponseApi);
     }
 
     public static Mono<ServerResponse> buildResponseServiceAuth(
-            GenerateTokenResponseApi generateTokenResponseApi,
+            SeekResponseApi seekResponseApi,
             String nameOperation, List<ErrorDetail> errorDetails, Exception exception,
             BusinessException businessException) {
 
@@ -95,7 +95,7 @@ public class HandlerUtilApi {
 
         if (Objects.nonNull(businessException)) {
             log.info(operation.getNameResponse().replace(NAME_RESPONSE, "Error Business Response"),
-                    kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorRS"), generateTokenResponseApi),
+                    kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorRS"), seekResponseApi),
                     kv(operation.getKvResponse().replace(KV_RESPONSE, "ErrorBusinessRS"), businessException));
         } else if (Objects.nonNull(exception)) {
 
@@ -105,14 +105,14 @@ public class HandlerUtilApi {
             kv = isOpen ? "ErrorFallbackOpenRS" : "ErrorFallbackRS";
 
             log.info(operation.getNameResponse().replace(NAME_RESPONSE, nameError),
-                    kv(operation.getKvResponse().replace(KV_RESPONSE, kv), generateTokenResponseApi),
+                    kv(operation.getKvResponse().replace(KV_RESPONSE, kv), seekResponseApi),
                     kv(operation.getKvResponse().replace(KV_RESPONSE, kv), exception));
         } else {
-            log.info(operation.getNameResponse(), kv(operation.getKvResponse(), generateTokenResponseApi));
+            log.info(operation.getNameResponse(), kv(operation.getKvResponse(), seekResponseApi));
         }
 
         return ServerResponse
                 .status(HttpStatus.OK)
-                .bodyValue(generateTokenResponseApi);
+                .bodyValue(seekResponseApi);
     }
 }

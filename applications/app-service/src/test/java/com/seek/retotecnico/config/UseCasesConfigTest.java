@@ -1,7 +1,7 @@
 package com.seek.retotecnico.config;
 
-import com.seek.retotecnico.model.gateway.CustomerGateway;
-import com.seek.retotecnico.usecase.usermanager.CustomerManagerUseCase;
+import com.seek.retotecnico.model.gateway.UserGateway;
+import com.seek.retotecnico.usecase.usermanager.UserManagerUseCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UseCasesConfigTest {
 
     @Mock
-    private CustomerGateway customerGateway;
+    private UserGateway userGateway;
 
     @InjectMocks
     private UseCasesConfig useCasesConfig;
@@ -21,9 +21,9 @@ class UseCasesConfigTest {
 
     @Test
     void shouldCreateSecurityUseCase() {
-        CustomerManagerUseCase customerManagerUseCase =
-                useCasesConfig.userManagerUseCase(customerGateway);
-        Assertions.assertNotNull(customerManagerUseCase);
+        UserManagerUseCase userManagerUseCase =
+                useCasesConfig.userManagerUseCase(userGateway);
+        Assertions.assertNotNull(userManagerUseCase);
     }
 
 }

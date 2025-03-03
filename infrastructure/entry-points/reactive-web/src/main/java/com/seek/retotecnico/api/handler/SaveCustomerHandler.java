@@ -1,6 +1,6 @@
 package com.seek.retotecnico.api.handler;
 
-import com.seek.retotecnico.api.dto.request.CreateCustomerRequestApi;
+import com.seek.retotecnico.api.dto.request.SeekRequestApi;
 import com.seek.retotecnico.api.processor.SaveCustomer;
 import com.seek.retotecnico.model.util.enums.Operation;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +20,19 @@ import static com.seek.retotecnico.api.util.UserManagerUtilApi.*;
 public class SaveCustomerHandler {
 
     private final SaveCustomer saveCustomer;
-    private static final String OPERATION_PROCESS_NAME = "saveCustomer";
+    private static final String OPERATION_PROCESS_NAME = "createUser";
     private static final String FALLBACK_METHOD_NAME = "fallback";
 
     @CircuitBreaker(name = OPERATION_PROCESS_NAME, fallbackMethod = FALLBACK_METHOD_NAME)
-    public Mono<ServerResponse> process(CreateCustomerRequestApi createCustomerRequestApi) {
-        return saveCustomer.execute(createCustomerRequestApi, Operation.CREATE_CUSTOMER);
+    public Mono<ServerResponse> process(SeekRequestApi seekRequestApi) {
+        return saveCustomer.execute(seekRequestApi, Operation.CREATE_USER);
     }
 
-    public Mono<ServerResponse> fallback(CreateCustomerRequestApi createCustomerRequestApi, Exception exception) {
+    public Mono<ServerResponse> fallback(SeekRequestApi createCustomerRequestApi, Exception exception) {
         return buildResponseFallback(createCustomerRequestApi, TechnicalMessage.ERROR_INTERNAL_SERVER, exception);
     }
 
-    public Mono<ServerResponse> fallback(CreateCustomerRequestApi createCustomerRequestApi, CallNotPermittedException callNotPermittedException) {
+    public Mono<ServerResponse> fallback(SeekRequestApi createCustomerRequestApi, CallNotPermittedException callNotPermittedException) {
         return buildResponseFallback(createCustomerRequestApi, TechnicalMessage.ERROR_SERVICE_UNAVAILABLE, callNotPermittedException);
     }
 

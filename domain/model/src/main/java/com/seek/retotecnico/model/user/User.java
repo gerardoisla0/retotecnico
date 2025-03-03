@@ -1,13 +1,12 @@
-package com.seek.retotecnico.model.customer;
+package com.seek.retotecnico.model.user;
 
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 @Builder(toBuilder = true)
 public class User {
+    protected String id;
     protected String name;
     protected String email;
     protected String password;

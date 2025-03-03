@@ -1,11 +1,10 @@
 package com.seek.retotecnico.api.handler;
 
-import com.seek.retotecnico.api.CustomerManagerRouteRest;
+import com.seek.retotecnico.api.SeekRouteRest;
 import com.seek.retotecnico.api.config.JwtSecurityConfig;
 import com.seek.retotecnico.api.config.JwtTokenProvider;
-import com.seek.retotecnico.api.dto.request.CreateCustomerRequestApi;
-import com.seek.retotecnico.api.dto.request.GenerateTokenRequestApi;
-import com.seek.retotecnico.api.dto.response.CreateCustomerResponseApi;
+import com.seek.retotecnico.api.dto.request.SeekRequestApi;
+import com.seek.retotecnico.api.dto.response.SeekResponseApi;
 import com.seek.retotecnico.model.util.enums.Operation;
 import com.seek.retotecnico.model.util.exception.BusinessException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
@@ -38,19 +37,19 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
-@ContextConfiguration(classes = { CustomerManagerRouteRest.class, JwtSecurityConfig.class,
-        SaveCustomerHandler.class, AuthenticationHandler.class, JwtTokenProvider.class, GetCustomerMetricsHandler.class, GetCustomerHandler.class})
-class saveCustomerHandlerTest extends GenericHandleTest {
+@ContextConfiguration(classes = { SeekRouteRest.class, JwtSecurityConfig.class,
+        SaveCustomerHandler.class, AuthenticationHandler.class, JwtTokenProvider.class, GetCustomerMetricsHandler.class, GetTaskHandler.class})
+class saveUserHandlerTest extends GenericHandleTest {
     private static final Operation OPERATION = Operation.CREATE_CUSTOMER;
     private static final Operation OPERATION_GT = Operation.GENERATE_TOKEN;
-    private CreateCustomerRequestApi createCustomerRequestApi;
-    private GenerateTokenRequestApi generateTokenRequestApi;
+    private SeekRequestApi createCustomerRequestApi;
+    private AuthenticateUserRequestApi authenticateUserRequestApi;
 
     @BeforeEach
     public void setUp() {
 
         createCustomerRequestApi = buildCreateUserRequest();
-        generateTokenRequestApi = buildCreateGenerateToken();
+        authenticateUserRequestApi = buildCreateGenerateToken();
 
         webTestClient = WebTestClient.bindToApplicationContext(context)
                 .configureClient().build();
@@ -67,9 +66,9 @@ class saveCustomerHandlerTest extends GenericHandleTest {
         webTestClient.post().uri(OPERATION.getPath())
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(createCustomerRequestApi),
-                        CreateCustomerRequestApi.class).exchange()
+                        SeekRequestApi.class).exchange()
                 .expectStatus().is5xxServerError()
-                .expectBody(CreateCustomerResponseApi.class);
+                .expectBody(SeekResponseApi.class);
 
 
         verify(saveCustomer, times(1)).execute(any(),any());
@@ -87,9 +86,9 @@ class saveCustomerHandlerTest extends GenericHandleTest {
         webTestClient.post().uri(OPERATION.getPath())
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(createCustomerRequestApi),
-                        CreateCustomerRequestApi.class).exchange()
+                        SeekRequestApi.class).exchange()
                 .expectStatus().is5xxServerError()
-                .expectBody(CreateCustomerResponseApi.class);
+                .expectBody(SeekResponseApi.class);
 
     }
 
@@ -99,7 +98,7 @@ class saveCustomerHandlerTest extends GenericHandleTest {
 
         SaveCustomerHandler target = buildCreateManagerHandler();
         Method testMethod = target.getClass().getMethod("process",
-                CreateCustomerRequestApi.class);
+                SeekRequestApi.class);
 
         CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults(OPERATION.getName());
 
@@ -121,13 +120,13 @@ class saveCustomerHandlerTest extends GenericHandleTest {
 
         AuthenticationHandler target = buildAuthenticationHandler();
         Method testMethod = target.getClass().getMethod("process",
-                GenerateTokenRequestApi.class);
+                AuthenticateUserRequestApi.class);
 
         CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults(OPERATION_GT.getName());
 
         FallbackMethod fallbackMethod = FallbackMethod.create(
                 FALLBACK_METHOD_NAME, testMethod,
-                new Object[] { generateTokenRequestApi }, target);
+                new Object[] {authenticateUserRequestApi}, target);
 
         Mono<ServerResponse> responseError = (Mono<ServerResponse>) fallbackMethod.fallback(
                 CallNotPermittedException.createCallNotPermittedException(

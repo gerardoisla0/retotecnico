@@ -29,5 +29,7 @@ public class CustomerUtils {
     public static final String CREATE_CUSTOMERS_KEY_RESPONSE= "createCustomersRS";
     public static final String CREATE_CUSTOMERS_ERROR_RESPONSE = "DataBase Create Customers Error Response";
     public static final String CREATE_CUSTOMERS_ERROR_KV_RESPONSE= "createCustomersErrorRS";
-    public static final String COMMON_STRING_DOCUMENT_ID = "DocumentId";
+    public static final String COMMON_STRING_EMAIL = "email";
+    public static final String COMMON_STRING_PASSWORD = "password";
+
 }

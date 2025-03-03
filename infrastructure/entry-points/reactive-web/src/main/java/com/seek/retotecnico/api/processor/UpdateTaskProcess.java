@@ -5,6 +5,7 @@ import com.seek.retotecnico.api.mapper.TaskResponseMapperApi;
 import com.seek.retotecnico.api.util.constant.validator.RequestValidatorHandlerApi;
 import com.seek.retotecnico.model.task.Task;
 import com.seek.retotecnico.model.util.enums.Operation;
+import com.seek.retotecnico.model.util.enums.TechnicalMessage;
 import com.seek.retotecnico.model.util.exception.BusinessException;
 import com.seek.retotecnico.usecase.taskmanager.TaskManagerUseCase;
 import lombok.RequiredArgsConstructor;
@@ -18,32 +19,38 @@ import static com.seek.retotecnico.api.util.UserManagerUtilApi.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DeleteTaskProcess {
+public class UpdateTaskProcess {
 
     private final TaskManagerUseCase taskManagerUseCase;
 
-    public Mono<ServerResponse> execute(SeekRequestApi request, Operation operation) {
+    public Mono<ServerResponse> execute(String id, SeekRequestApi request, Operation operation) {
         return Mono.just(request)
-                .flatMap(req -> validateAndProcessTaskCreation(req, operation));
+                .flatMap(req -> validateAndProcessTaskUpdate(id, req, operation));
     }
 
-    private Mono<ServerResponse> validateAndProcessTaskCreation(SeekRequestApi request, Operation operation) {
-        return RequestValidatorHandlerApi.validateRequestTask(request)
+    private Mono<ServerResponse> validateAndProcessTaskUpdate(String id, SeekRequestApi request, Operation operation) {
+        return RequestValidatorHandlerApi.validateRequestTaskUpdate(request)
                 .filter(errors -> !errors.isEmpty())
                 .flatMap(errors -> buildResponseBadRequest(operation,request, errors))
-                .switchIfEmpty(Mono.defer(() -> processCustomerCreation(request, operation)));
+                .switchIfEmpty(Mono.defer(() -> processCustomerUpdate(id, request, operation)));
     }
 
-    private Mono<ServerResponse> processCustomerCreation(SeekRequestApi request, Operation operation) {
-        return createTask(request)
-                .flatMap(customer -> buildSuccessResponse(customer, operation))
-                .onErrorResume(BusinessException.class, businessException -> buildBusinessErrorResponse(request, businessException));
+    private Mono<ServerResponse> processCustomerUpdate(String id, SeekRequestApi request, Operation operation) {
+        return findTask(id)
+                .flatMap(updTask -> updateTask(request, id))
+                .flatMap(tasks -> buildSuccessResponse(tasks, operation))
+                .switchIfEmpty(Mono.defer(() -> buildBusinessErrorResponse(request, new BusinessException(TechnicalMessage.ERROR_TASK_NOT_EXIST))))
+                .onErrorResume(BusinessException.class, error -> this.buildBusinessErrorResponse(request, error));
     }
 
-    private Mono<Task> createTask(SeekRequestApi request) {
+    private Mono<Task> findTask(String taskId) {
+        return taskManagerUseCase.getTaskById(Long.parseLong(taskId));
+    }
+
+    private Mono<Task> updateTask(SeekRequestApi request, String id) {
         return Mono.just(request)
-                .map(TaskResponseMapperApi.MAPPER::taskUserRequestToClient)
-                .flatMap(taskManagerUseCase::createTask);
+                .map(TaskResponseMapperApi.MAPPER::taskUserRequestToTaskUpdate)
+                .flatMap(updTask -> taskManagerUseCase.updateTask(id, updTask));
     }
 
     private Mono<ServerResponse> buildBusinessErrorResponse(SeekRequestApi request, BusinessException exception) {

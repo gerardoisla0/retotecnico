@@ -1,4 +1,4 @@
-package com.seek.retotecnico.api.dto.response;
+package com.seek.retotecnico.api.dto.response.structure.body;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,12 +11,9 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = SchemaConstantsApi.RESPONSE_TITLE)
 @Builder(toBuilder = true)
-public class GenerateTokenResponseApi {
+public class AuthResponseApi {
 
     @JsonProperty("token")
     @Schema(description = SchemaConstantsApi.RESPONSE_TOKEN)
     String token;
-    @JsonProperty("message")
-    @Schema(description = SchemaConstantsApi.RESPONSE_MESSAGE)
-    String message;
 }

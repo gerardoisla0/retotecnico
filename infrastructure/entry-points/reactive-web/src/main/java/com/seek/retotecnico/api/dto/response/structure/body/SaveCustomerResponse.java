@@ -14,15 +14,8 @@ public class SaveCustomerResponse {
     @Schema(description = SchemaConstantsApi.RESPONSE_ID)
     String name;
 
-    @JsonProperty("lastName")
+    @JsonProperty("email")
     @Schema(description = SchemaConstantsApi.RESPONSE_DATE_CREATED)
-    String lastName;
+    String email;
 
-    @JsonProperty("documentId")
-    @Schema(description = SchemaConstantsApi.RESPONSE_DATE_CREATED)
-    String documentId;
-
-    @JsonProperty("age")
-    @Schema(description = SchemaConstantsApi.RESPONSE_DATE_CREATED)
-    Integer age;
 }

@@ -5,15 +5,11 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface CustomerRepository extends ReactiveCrudRepository<UserData, String>, ReactiveQueryByExampleExecutor<UserData> {
-
-    @Query("SELECT * FROM customer WHERE document_id = :documentId")
-    Mono<UserData> findByDocumentId(@Param("documentId") String documentId);
-    @Query("SELECT COUNT(*) AS total_customers, AVG(age) AS average_age, STDDEV(age) AS age_standard_deviation FROM customer")
-    Mono<CustomerMetricsData> getCustomerMetrics();
-    Flux<UserData> findAll();
-
+public interface UserRepository extends ReactiveCrudRepository<UserData, String>, ReactiveQueryByExampleExecutor<UserData> {
+    @Query("SELECT * FROM user WHERE email = :email AND password = :password")
+    Mono<UserData> findUserByEmailAndPassword(@Param("email") String email, @Param("password") String password);
+    @Query("SELECT * FROM user WHERE email = :email")
+    Mono<UserData> findUserByEmail(@Param("email") String email);
 }

@@ -2,8 +2,8 @@ package com.seek.retotecnico.api.mapper;
 
 import com.seek.retotecnico.api.dto.request.SeekRequestApi;
 import com.seek.retotecnico.api.dto.response.SeekResponseApi;
+import com.seek.retotecnico.model.task.Task;
 import com.seek.retotecnico.model.user.User;
-import com.seek.retotecnico.model.metrics.CustomerMetrics;
 import com.seek.retotecnico.model.util.enums.TechnicalMessage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,27 +14,29 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Mapper(imports = { LocalDateTime.class, DateTimeFormatter.class})
-public interface ClientResponseMapperApi {
+public interface TaskResponseMapperApi {
 
-    ClientResponseMapperApi MAPPER = Mappers.getMapper(ClientResponseMapperApi.class);
+    TaskResponseMapperApi MAPPER = Mappers.getMapper(TaskResponseMapperApi.class);
     @Mapping(target = "message", source = "technicalMessage.message")
     SeekResponseApi requestToResponse(
             SeekRequestApi createCustomerRequestApi, TechnicalMessage technicalMessage);
 
-    @Mapping(target = "saveCustomerRS.name", source = "customer.name")
-    @Mapping(target = "saveCustomerRS.lastName", source = "customer.lastName")
-    @Mapping(target = "saveCustomerRS.documentId", source = "customer.documentId")
-    @Mapping(target = "saveCustomerRS.age", source = "customer.age")
+    @Mapping(target = "listTaskRS.tasks", source = "tasks")
     @Mapping(target = "message", source = "technicalMessage.message")
-    SeekResponseApi clientToCreateUserResponse(User user, TechnicalMessage technicalMessage);
+    SeekResponseApi listToTaskResponse(List<Task> tasks, TechnicalMessage technicalMessage);
 
-    @Mapping(target = "customerMetricsRS.totalCustomers", source = "customerMetrics.totalCustomers")
-    @Mapping(target = "customerMetricsRS.averageAge", source = "customerMetrics.averageAge")
-    @Mapping(target = "customerMetricsRS.ageStandardDeviation", source = "customerMetrics.ageStandardDeviation")
-    @Mapping(target = "message", source = "technicalMessage.message")
-    SeekResponseApi metricsToMetricsResponse(CustomerMetrics customerMetrics, TechnicalMessage technicalMessage);
+    @Mapping(target = "title", source = "seekRequestApi.saveTaskRQ.title")
+    @Mapping(target = "description", source = "seekRequestApi.saveTaskRQ.description")
+    @Mapping(target = "status", source = "seekRequestApi.saveTaskRQ.status")
+    Task taskUserRequestToClient(SeekRequestApi seekRequestApi);
 
-    @Mapping(target = "listCustomerRS.customers", source = "customers")
+    @Mapping(target = "title", source = "seekRequestApi.updateTaskRQ.title")
+    @Mapping(target = "description", source = "seekRequestApi.updateTaskRQ.description")
+    @Mapping(target = "status", source = "seekRequestApi.updateTaskRQ.status")
+    Task taskUserRequestToTaskUpdate(SeekRequestApi seekRequestApi);
+
+    @Mapping(target = "saveTaskRS.title", source = "task.title")
     @Mapping(target = "message", source = "technicalMessage.message")
-    SeekResponseApi listToCustomerResponse(List<User> users, TechnicalMessage technicalMessage);
+    SeekResponseApi taskToCreateTaskResponse(Task task, TechnicalMessage technicalMessage);
+
 }

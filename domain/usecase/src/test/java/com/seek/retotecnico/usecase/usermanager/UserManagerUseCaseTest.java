@@ -1,7 +1,7 @@
 package com.seek.retotecnico.usecase.usermanager;
 
-import com.seek.retotecnico.model.customer.Customer;
-import com.seek.retotecnico.model.gateway.CustomerGateway;
+import com.seek.retotecnico.model.user.User;
+import com.seek.retotecnico.model.gateway.UserGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,65 +19,65 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class CustomerManagerUseCaseTest {
+class UserManagerUseCaseTest {
 
     @Mock
-    private CustomerGateway customerGateway;
+    private UserGateway userGateway;
 
-    private CustomerManagerUseCase customerManagerUseCase;
+    private UserManagerUseCase userManagerUseCase;
 
-    private Mono<Customer> processClient;
-    private Customer processCustomerCrud;
+    private Mono<User> processClient;
+    private User processUserCrud;
     @BeforeEach
     public void setUp() {
-        customerManagerUseCase = new CustomerManagerUseCase(customerGateway);
+        userManagerUseCase = new UserManagerUseCase(userGateway);
         processClient = buildMonoClient();
-        processCustomerCrud = buildClient();
+        processUserCrud = buildClient();
 
     }
 
     @Test
     void shouldUserAlreadyRegister() {
 
-        given(customerGateway.createCustomer(any())).willReturn(processClient);
+        given(userGateway.createCustomer(any())).willReturn(processClient);
 
-        Mono<Customer> response = customerManagerUseCase.saveCustomer(
-                processCustomerCrud);
+        Mono<User> response = userManagerUseCase.saveCustomer(
+                processUserCrud);
 
         StepVerifier.create(response)
                 .assertNext(client -> {
                     assertEquals("Peter", client.getName());
                 }).verifyComplete();
 
-        verify(customerGateway, times(1)).createCustomer(any());
+        verify(userGateway, times(1)).createCustomer(any());
     }
 
     @Test
     void shouldUserRegisterSuccess() {
 
-        given(customerGateway.createCustomer(any())).willReturn(processClient);
+        given(userGateway.createCustomer(any())).willReturn(processClient);
 
-        Mono<Customer> response = customerManagerUseCase.saveCustomer(
-                processCustomerCrud);
+        Mono<User> response = userManagerUseCase.saveCustomer(
+                processUserCrud);
 
         StepVerifier.create(response)
                 .assertNext(client -> {
                     assertEquals("Peter", client.getName());
                 }).verifyComplete();
 
-        verify(customerGateway, times(1)).createCustomer(any());
+        verify(userGateway, times(1)).createCustomer(any());
     }
 
-    private Mono<Customer> buildMonoClient(){
-        return Mono.just(com.seek.retotecnico.model.customer.Customer.builder()
+    private Mono<User> buildMonoClient(){
+        return Mono.just(User.builder()
                 .name("Peter")
                 .lastName("Isla")
                 .birthDay(new Date())
                 .build());
     }
 
-    private Customer buildClient(){
-        return com.seek.retotecnico.model.customer.Customer.builder()
+    private User buildClient(){
+        return User.builder()
                 .name("Peter")
                 .lastName("Isla")
                 .birthDay(new Date())

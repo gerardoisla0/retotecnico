@@ -9,20 +9,16 @@ import java.time.LocalDate;
 
 @Data
 @Builder(toBuilder = true)
-@Table(name = "customer")
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerData {
+public class UserData {
     @Id
     private Long id;
     @Column("name")
     private String name;
-    @Column("last_name")
-    private String lastName;
-    @Column("document_id")
-    private String documentId;
-    @Column("age")
-    private Integer age;
-    @Column("birth_day")
-    private LocalDate birthDay;
+    @Column("email")
+    private String email;
+    @Column("password")
+    private String password;
 }

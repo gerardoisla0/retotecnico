@@ -1,13 +1,15 @@
 package com.seek.retotecnico.api.handler;
 
 import com.seek.retotecnico.api.config.JwtTokenProvider;
+import com.seek.retotecnico.api.dto.request.SeekRequestApi;
+import com.seek.retotecnico.api.dto.response.SeekResponseApi;
+import com.seek.retotecnico.api.dto.response.structure.body.AuthResponseApi;
 import com.seek.retotecnico.api.util.UserManagerUtilApi;
 import com.seek.retotecnico.api.util.constant.validator.RequestValidatorHandlerApi;
 import com.seek.retotecnico.model.util.enums.Operation;
 import com.seek.retotecnico.model.util.enums.TechnicalMessage;
 import com.seek.retotecnico.model.util.exception.BusinessException;
-import com.seek.retotecnico.api.dto.request.GenerateTokenRequestApi;
-import com.seek.retotecnico.api.dto.response.GenerateTokenResponseApi;
+import com.seek.retotecnico.usecase.usermanager.UserManagerUseCase;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
@@ -16,54 +18,68 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import static com.seek.retotecnico.api.util.UserManagerUtilApi.buildResponseBusinessException;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private static final String OPERATION_PROCESS_NAME = "generateToken";
+    private final UserManagerUseCase userManagerUseCase;
+
+    private static final String OPERATION_PROCESS_NAME = "authenticateUser";
     private static final String FALLBACK_METHOD_NAME = "fallback";
 
     @CircuitBreaker(name = OPERATION_PROCESS_NAME, fallbackMethod = FALLBACK_METHOD_NAME)
     public Mono<ServerResponse> process(
-            GenerateTokenRequestApi generateTokenRequestApi) {
-        return execute(generateTokenRequestApi, Operation.GENERATE_TOKEN);
+            SeekRequestApi seekRequestApi) {
+        return execute(seekRequestApi, Operation.AUTHENTICATE_USER);
     }
 
-    public Mono<ServerResponse> fallback(GenerateTokenRequestApi generateTokenRequestApi, Exception exception) {
-        return UserManagerUtilApi.buildResponseFallbackAuth(generateTokenRequestApi, TechnicalMessage.ERROR_INTERNAL_SERVER, exception);
+    public Mono<ServerResponse> fallback(SeekRequestApi seekRequestApi, Exception exception) {
+        return UserManagerUtilApi.buildResponseFallback(seekRequestApi, TechnicalMessage.ERROR_INTERNAL_SERVER, exception);
     }
 
-    public Mono<ServerResponse> fallback(GenerateTokenRequestApi generateTokenRequestApi, CallNotPermittedException callNotPermittedException) {
-        return UserManagerUtilApi.buildResponseFallbackAuth(generateTokenRequestApi, TechnicalMessage.ERROR_SERVICE_UNAVAILABLE, callNotPermittedException);
+    public Mono<ServerResponse> fallback(SeekRequestApi seekRequestApi, CallNotPermittedException callNotPermittedException) {
+        return UserManagerUtilApi.buildResponseFallback(seekRequestApi, TechnicalMessage.ERROR_SERVICE_UNAVAILABLE, callNotPermittedException);
     }
 
     public Mono<ServerResponse> execute(
-            GenerateTokenRequestApi generateTokenRequestApi, Operation operation) {
-        return Mono.just(generateTokenRequestApi)
+            SeekRequestApi seekRequestApi, Operation operation) {
+        return Mono.just(seekRequestApi)
                 .flatMap(generateTokenRQ -> executeOperation(generateTokenRQ,operation));
     }
 
-    private Mono<ServerResponse> executeOperation(GenerateTokenRequestApi generateTokenRequestApi, Operation operation) {
-        return RequestValidatorHandlerApi.validateRequestAuth(generateTokenRequestApi)
+    private Mono<ServerResponse> executeOperation(SeekRequestApi seekRequestApi, Operation operation) {
+        return RequestValidatorHandlerApi.validateRequestAuth(seekRequestApi)
                 .filter(errors -> !errors.isEmpty())
-                .flatMap(errors -> UserManagerUtilApi.buildResponseBadRequestAuth(operation, generateTokenRequestApi, errors))
-                .switchIfEmpty(Mono.defer(() -> Mono.just(generateTokenRequestApi)
+                .flatMap(errors -> UserManagerUtilApi.buildResponseBadRequest(operation, seekRequestApi, errors))
+                .switchIfEmpty(Mono.defer(() -> Mono.just(seekRequestApi)
                         .flatMap(createUserRQ -> generateTokenAndExecuteUseCase(createUserRQ, operation))
-                        .onErrorResume(BusinessException.class, businessException -> UserManagerUtilApi.buildResponseBusinessExceptionAuth(generateTokenRequestApi, businessException))
-                        .doOnSubscribe(subscription -> UserManagerUtilApi.logRequest(operation, generateTokenRequestApi))));
+                        .onErrorResume(BusinessException.class, businessException -> UserManagerUtilApi.buildResponseBusinessExceptionAuth(seekRequestApi, businessException))
+                        .doOnSubscribe(subscription -> UserManagerUtilApi.logRequest(operation, seekRequestApi))));
     }
 
-    private Mono<ServerResponse> generateTokenAndExecuteUseCase(GenerateTokenRequestApi generateTokenRequestApi, Operation operation) {
-        return jwtTokenProvider.generateToken(generateTokenRequestApi.getUsername())
-                .map(this::parsedToResponse)
-                .flatMap(clientRS -> UserManagerUtilApi.buildSuccessResponseAuth(generateTokenRequestApi, clientRS, operation))
-                .onErrorResume(BusinessException.class, businessException -> UserManagerUtilApi.buildResponseBusinessExceptionAuth(generateTokenRequestApi, businessException));
+    private Mono<ServerResponse> generateTokenAndExecuteUseCase(SeekRequestApi seekRequestApi, Operation operation) {
+        return userManagerUseCase.loginUser(seekRequestApi.getAuthUserRQ().getEmail(), seekRequestApi.getAuthUserRQ().getPassword())
+                .flatMap(userLogin -> jwtTokenProvider.generateToken(seekRequestApi.getAuthUserRQ().getEmail())
+                        .map(this::parsedToResponse)
+                        .flatMap(clientRS -> UserManagerUtilApi.buildSuccessResponseAuth(clientRS, operation))
+                )
+                .onErrorResume(BusinessException.class, businessException
+                        -> UserManagerUtilApi.buildResponseBusinessExceptionAuth(seekRequestApi, businessException))
+                .switchIfEmpty(Mono.defer(() -> {
+                    return buildBusinessErrorResponse(seekRequestApi, new BusinessException(TechnicalMessage.ERROR_INCORRECT_CREDENTIALS));
+                }));
     }
 
-    private GenerateTokenResponseApi parsedToResponse (String token){
-        return GenerateTokenResponseApi.builder().token(token)
+    private AuthResponseApi parsedToResponse (String token){
+        return AuthResponseApi.builder().token(token)
                 .build();
+    }
+
+    private Mono<ServerResponse> buildBusinessErrorResponse(SeekRequestApi request, BusinessException exception) {
+        return buildResponseBusinessException(request, exception);
     }
 }

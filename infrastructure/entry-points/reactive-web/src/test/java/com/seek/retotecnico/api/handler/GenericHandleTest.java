@@ -1,11 +1,9 @@
 package com.seek.retotecnico.api.handler;
 
 import com.seek.retotecnico.api.config.JwtTokenProvider;
-import com.seek.retotecnico.api.dto.request.CreateCustomerRequestApi;
-import com.seek.retotecnico.api.dto.request.GenerateTokenRequestApi;
-import com.seek.retotecnico.api.dto.request.body.SaveCustomerRequest;
-import com.seek.retotecnico.api.processor.GetCustomerMetricsProcess;
-import com.seek.retotecnico.api.processor.GetCustomerProcess;
+import com.seek.retotecnico.api.dto.request.SeekRequestApi;
+import com.seek.retotecnico.api.dto.request.body.SaveUserRequest;
+import com.seek.retotecnico.api.processor.GetTaskProcess;
 import com.seek.retotecnico.api.processor.SaveCustomer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +23,7 @@ public class GenericHandleTest {
     protected ApplicationContext context;
 
     @MockBean
-    protected GetCustomerProcess getCustomerProcess;
+    protected GetTaskProcess getTaskProcess;
     @MockBean
     protected GetCustomerMetricsProcess getCustomerMetricsProcess;
     @MockBean
@@ -48,7 +46,7 @@ public class GenericHandleTest {
     @Test
     void shouldBuildCustomerIdentityRequestWhenBodyIsCreateUse() {
 
-        CreateCustomerRequestApi createCustomerRequestApi = buildCreateUserRequest();
+        SeekRequestApi createCustomerRequestApi = buildCreateUserRequest();
 
         assertNotNull(createCustomerRequestApi);
         assertNotNull(createCustomerRequestApi.getSaveCustomerRQ().getAge());
@@ -61,15 +59,15 @@ public class GenericHandleTest {
     @Test
     void shouldBuildUnderAgeRequestWhenBodyIsGenerateToken() {
 
-        GenerateTokenRequestApi generateTokenRequestApi = buildGenerateTokenRequestApi();
-        assertNotNull(generateTokenRequestApi);
-        assertNotNull(generateTokenRequestApi.getUsername());
+        AuthenticateUserRequestApi authenticateUserRequestApi = buildGenerateTokenRequestApi();
+        assertNotNull(authenticateUserRequestApi);
+        assertNotNull(authenticateUserRequestApi.getUsername());
     }
 
-    protected CreateCustomerRequestApi buildCreateUserRequest() {
-        return CreateCustomerRequestApi
+    protected SeekRequestApi buildCreateUserRequest() {
+        return SeekRequestApi
                 .builder()
-                .saveCustomerRQ(SaveCustomerRequest.builder()
+                .saveCustomerRQ(SaveUserRequest.builder()
                         .name("Julio")
                         .lastName("Isla")
                         .age(33)
@@ -79,18 +77,18 @@ public class GenericHandleTest {
                 .build();
     }
 
-    protected GenerateTokenRequestApi buildCreateGenerateToken() {
-        return GenerateTokenRequestApi
+    protected AuthenticateUserRequestApi buildCreateGenerateToken() {
+        return AuthenticateUserRequestApi
                 .builder()
                 .username("Julio")
                 .build();
     }
 
 
-    protected CreateCustomerRequestApi buildBadRequest() {
-        return CreateCustomerRequestApi
+    protected SeekRequestApi buildBadRequest() {
+        return SeekRequestApi
                 .builder()
-                .saveCustomerRQ(SaveCustomerRequest.builder()
+                .saveCustomerRQ(SaveUserRequest.builder()
                         .name("Julio")
                         .lastName("Isla")
                         .age(33)
@@ -99,8 +97,8 @@ public class GenericHandleTest {
                 .build();
     }
 
-    protected GenerateTokenRequestApi buildGenerateTokenRequestApi() {
-        return GenerateTokenRequestApi
+    protected AuthenticateUserRequestApi buildGenerateTokenRequestApi() {
+        return AuthenticateUserRequestApi
                 .builder().username("username")
                 .build();
     }

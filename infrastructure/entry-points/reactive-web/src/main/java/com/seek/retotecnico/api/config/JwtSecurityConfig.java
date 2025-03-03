@@ -32,8 +32,9 @@ public class JwtSecurityConfig {
                 .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .exceptionHandling(exception -> exception.accessDeniedHandler(buildAccessDenied()))
                 .authorizeExchange(auth -> auth
-                        .pathMatchers("/actuator/**","/api-docs/**","api/v1/customers/token").permitAll()
-                        .pathMatchers("/api/v1/customers/**").hasRole("USER")
+                        .pathMatchers("/actuator/**","/api-docs/**","api/v1/user/login",
+                                "api/v1/user/create", "api/v1/task/all", "api/v1/task/update/*", "api/v1/task/delete/*", "api/v1/task/create").permitAll()
+                        //.pathMatchers("api/v1/**").hasRole("USER")
                         .anyExchange().authenticated())
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)

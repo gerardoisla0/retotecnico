@@ -1,9 +1,8 @@
 package com.seek.retotecnico.mysql;
 
-import com.seek.retotecnico.model.customer.Customer;
-import com.seek.retotecnico.model.util.exception.BusinessException;
-import com.seek.retotecnico.mysql.model.CustomerData;
-import com.seek.retotecnico.mysql.repository.CustomerRepository;
+import com.seek.retotecnico.model.user.User;
+import com.seek.retotecnico.mysql.model.UserData;
+import com.seek.retotecnico.mysql.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,28 +12,24 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CustomerAdapterTest {
+class UserAdapterTest {
 
     @InjectMocks
-    private CustomerAdapter customerAdapter;
+    private UserAdapter customerAdapter;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private UserRepository userRepository;
 
     @Test
     void shouldRegisterClient() {
-        when(customerRepository.save(any())).thenReturn(buildMonoClientData());
+        when(userRepository.save(any())).thenReturn(buildMonoClientData());
 
-        Mono<Customer> result = customerAdapter.createCustomer(buildClient());
+        Mono<User> result = customerAdapter.createCustomer(buildClient());
 
         StepVerifier.create(result)
                 .expectNext(buildClient())
@@ -42,8 +37,8 @@ class CustomerAdapterTest {
     }
     @Test
     void shouldFindClient() {
-        when(customerRepository.findByDocumentId(anyString())).thenReturn(buildMonoClientData());
-        Mono<Customer> result = customerAdapter.findCustomerByDocumentId("123456");
+        when(userRepository.findByDocumentId(anyString())).thenReturn(buildMonoClientData());
+        Mono<User> result = customerAdapter.findCustomerByDocumentId("123456");
 
         StepVerifier.create(result)
                 .expectNext(buildClient())
@@ -52,16 +47,16 @@ class CustomerAdapterTest {
 
     @Test
     void shouldFindNotClient() {
-        when(customerRepository.findByDocumentId(anyString())).thenReturn(
+        when(userRepository.findByDocumentId(anyString())).thenReturn(
                 Mono.empty());
-        Mono<Customer> signatureDetailSaved = customerAdapter.findCustomerByDocumentId("12344");
+        Mono<User> signatureDetailSaved = customerAdapter.findCustomerByDocumentId("12344");
 
         StepVerifier.create(signatureDetailSaved)
                 .verifyComplete();
     }
 
-    private Mono<CustomerData> buildMonoClientData(){
-        return Mono.just(CustomerData.builder()
+    private Mono<UserData> buildMonoClientData(){
+        return Mono.just(UserData.builder()
                 .name("Peter")
                 .lastName("isla")
                 .documentId("123456")
@@ -70,8 +65,8 @@ class CustomerAdapterTest {
                 .build());
     }
 
-    private Customer buildClient(){
-        return Customer.builder()
+    private User buildClient(){
+        return User.builder()
                 .name("Peter")
                 .lastName("isla")
                 .documentId("123456")

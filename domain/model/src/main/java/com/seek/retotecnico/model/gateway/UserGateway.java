@@ -1,14 +1,12 @@
 package com.seek.retotecnico.model.gateway;
 
-import com.seek.retotecnico.model.customer.User;
-import com.seek.retotecnico.model.metrics.CustomerMetrics;
+import com.seek.retotecnico.model.user.User;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface CustomerGateway {
-    Mono<User> createCustomer(User user);
-    Mono<User> findCustomerByDocumentId(String documentId);
-    Mono<CustomerMetrics> getCustomerMetrics();
-    Mono<List<User>> listAllCustomers();
+public interface UserGateway {
+    Mono<User> findUser(User user);
+    Mono<User> createUser(User user);
+    Mono<User> findUserByEmailAndPassword(String email, String password);
 }

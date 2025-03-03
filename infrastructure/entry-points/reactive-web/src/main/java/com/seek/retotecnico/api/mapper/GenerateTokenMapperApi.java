@@ -1,8 +1,9 @@
 package com.seek.retotecnico.api.mapper;
 
-import com.seek.retotecnico.api.dto.response.GenerateTokenResponseApi;
+import com.seek.retotecnico.api.dto.request.SeekRequestApi;
+import com.seek.retotecnico.api.dto.response.SeekResponseApi;
+import com.seek.retotecnico.api.dto.response.structure.body.AuthResponseApi;
 import com.seek.retotecnico.model.util.enums.TechnicalMessage;
-import com.seek.retotecnico.api.dto.request.GenerateTokenRequestApi;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -16,11 +17,10 @@ public interface GenerateTokenMapperApi {
 
     GenerateTokenMapperApi MAPPER = Mappers.getMapper(GenerateTokenMapperApi.class);
     @Mapping(target = "message", source = "technicalMessage.message")
-    GenerateTokenResponseApi requestToResponse(
-            GenerateTokenRequestApi generateTokenRequestApi, TechnicalMessage technicalMessage);
+    SeekResponseApi requestToResponse(TechnicalMessage technicalMessage);
 
+    @Mapping(target = "authUserRS", source = "authResponseApi")
     @Mapping(target = "message", source = "technicalMessage.message")
-    GenerateTokenResponseApi  requestToGetGenerateTokenResponse(
-            GenerateTokenRequestApi generateTokenRequestApi, GenerateTokenResponseApi generateTokenResponseApi, TechnicalMessage technicalMessage);
+    SeekResponseApi requestToGetGenerateTokenResponse(AuthResponseApi authResponseApi, TechnicalMessage technicalMessage);
 
 }

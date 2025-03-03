@@ -36,13 +36,13 @@ La arquitectura sigue los principios de **Clean Architecture** y está basada en
 4. **Compilación y ejecución**:
     - Ejecuta el proyecto con **Gradle** utilizando el comando `bootRun`.
     - El puerto por defecto será **8083**.
-5. **Generación de Token**: Utiliza el endpoint `/api/v1/customer/token` para obtener un token JWT que autoriza las siguientes operaciones:
+5. **Generación de Token**: Utiliza el endpoint `/api/v1/user/token` para obtener un token JWT que autoriza las siguientes operaciones:
 
 ### Endpoints
 
 1. **Generar Token**:
     ```bash
-    curl --location 'http://localhost:8083/api/v1/customer/token' \
+    curl --location 'http://localhost:8083/api/v1/user/token' \
     --header 'Content-Type: application/json' \
     --data '{
         "username": "gerardo"
@@ -50,7 +50,7 @@ La arquitectura sigue los principios de **Clean Architecture** y está basada en
     ```
 2. **Crear Cliente**:
     ```bash
-    curl --location 'http://localhost:8083/api/v1/customer/create' \
+    curl --location 'http://localhost:8083/api/v1/user/create' \
     --header 'Authorization: Bearer <your_jwt_token>' \
     --header 'Content-Type: application/json' \
     --data-raw '{
@@ -66,7 +66,7 @@ La arquitectura sigue los principios de **Clean Architecture** y está basada en
 
 3. **Listar Clientes**:
     ```bash
-    curl --location 'http://localhost:8083/api/v1/customers/list' \
+    curl --location 'http://localhost:8083/api/v1/users/list' \
     --header 'Authorization: Bearer <your_jwt_token>' \
     --data ''
     ```
@@ -75,7 +75,7 @@ La arquitectura sigue los principios de **Clean Architecture** y está basada en
 
 4. **Obtener Métricas del Cliente**:
     ```bash
-    curl --location 'http://localhost:8083/api/v1/customers/metrics' \
+    curl --location 'http://localhost:8083/api/v1/users/metrics' \
     --header 'Authorization: Bearer <your_jwt_token>' \
     --data ''
     ```

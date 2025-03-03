@@ -1,21 +1,28 @@
-CREATE TABLE customer (
+CREATE TABLE user (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    document_id VARCHAR(255) NOT NULL,
-    age INT NOT NULL,
-    birth_day DATE NOT NULL
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT NOW()
 );
 
-INSERT INTO seek.customer (name, last_name, document_id, age, birth_day)
+CREATE TABLE task (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created_at DATETIME DEFAULT NOW()
+);
+
+INSERT INTO seek.user (name, email, password)
 VALUES
-('Juan', 'Perez', '47154481', 28, '1996-01-15'),
-('Maria', 'Gomez', '47154482', 35, '1989-07-22'),
-('Julio', 'Isla', '47154491', 33, '1991-08-22'),
-('Carlos', 'Lopez', '47154483', 41, '1983-10-10'),
-('Ana', 'Diaz', '47154484', 27, '1996-05-11'),
-('Pedro', 'Martinez', '47154485', 38, '1986-02-28'),
-('Laura', 'Sanchez', '47154486', 30, '1993-03-25'),
-('Jose', 'Ramirez', '47154487', 45, '1978-04-05'),
-('Lucia', 'Hernandez', '47154488', 25, '1997-12-18'),
-('Felipe', 'Cruz', '47154489', 50, '1974-11-30');
+('Juan', 'Perez@gmail.com', '12345678'),
+('Maria', 'Gomez@gmail.com', '12345678'),
+('Julio', 'Isla@gmail.com', '12345678'),
+('Carlos', 'Lopez@gmail.com', '12345678'),
+('Ana', 'Diaz@gmail.com', '12345678'),
+('Pedro', 'Martinez@gmail.com', '12345678'),
+('Laura', 'Sanchez@gmail.com', '12345678'),
+('Jose', 'Ramirez@gmail.com', '12345678'),
+('Lucia', 'Hernandez@gmail.com', '12345678'),
+('Felipe', 'Cruz@gmail.com', '12345678');

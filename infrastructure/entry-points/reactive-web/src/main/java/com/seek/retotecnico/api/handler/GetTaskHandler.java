@@ -1,7 +1,7 @@
 package com.seek.retotecnico.api.handler;
 
 import com.seek.retotecnico.api.dto.request.SeekRequestApi;
-import com.seek.retotecnico.api.processor.GetCustomerProcess;
+import com.seek.retotecnico.api.processor.GetTaskProcess;
 import com.seek.retotecnico.model.util.enums.Operation;
 import com.seek.retotecnico.model.util.enums.TechnicalMessage;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
@@ -17,15 +17,16 @@ import static com.seek.retotecnico.api.util.UserManagerUtilApi.buildResponseFall
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GetCustomerHandler {
+public class GetTaskHandler {
 
-    private final GetCustomerProcess getCustomerProcess;
-    private static final String OPERATION_PROCESS_NAME = "getCustomers";
+    private final GetTaskProcess getTaskProcess;
+
+    private static final String OPERATION_PROCESS_NAME = "getAllTask";
     private static final String FALLBACK_METHOD_NAME = "fallback";
 
     @CircuitBreaker(name = OPERATION_PROCESS_NAME, fallbackMethod = FALLBACK_METHOD_NAME)
     public Mono<ServerResponse> process() {
-        return getCustomerProcess.execute(Operation.CUSTOMER);
+        return getTaskProcess.execute(Operation.GET_ALL_TASK);
     }
 
     public Mono<ServerResponse> fallback(SeekRequestApi createCustomerRequestApi, Exception exception) {

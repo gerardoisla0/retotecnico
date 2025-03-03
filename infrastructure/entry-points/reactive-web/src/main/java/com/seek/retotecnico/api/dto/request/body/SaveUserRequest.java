@@ -13,24 +13,16 @@ import lombok.extern.jackson.Jacksonized;
 @Builder(toBuilder = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(description = SchemaConstantsApi.REQUEST_TITLE)
-public class SaveCustomerRequest {
+public class SaveUserRequest {
     @JsonProperty("name")
     @Schema(description = SchemaConstantsApi.REQUEST_NAME)
     String name;
 
-    @JsonProperty("lastName")
+    @JsonProperty("email")
     @Schema(description = SchemaConstantsApi.REQUEST_LAST_NAME)
-    String lastName;
+    String email;
 
-    @JsonProperty("documentId")
+    @JsonProperty("password")
     @Schema(description = SchemaConstantsApi.REQUEST_DOCUMENT_ID)
-    String documentId;
-
-    @JsonProperty("age")
-    @Schema(description = SchemaConstantsApi.REQUEST_AGE)
-    Integer age;
-
-    @JsonProperty("birthDay")
-    @Schema(description = SchemaConstantsApi.REQUEST_BIRTHDAY)
-    String birthDay;
+    String password;
 }

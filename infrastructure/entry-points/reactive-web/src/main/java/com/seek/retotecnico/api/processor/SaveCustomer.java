@@ -1,13 +1,13 @@
 package com.seek.retotecnico.api.processor;
 
-import com.seek.retotecnico.api.dto.request.CreateCustomerRequestApi;
-import com.seek.retotecnico.api.mapper.ClientRequestMapperApi;
+import com.seek.retotecnico.api.dto.request.SeekRequestApi;
+import com.seek.retotecnico.api.mapper.UserRequestMapperApi;
 import com.seek.retotecnico.api.util.constant.validator.RequestValidatorHandlerApi;
-import com.seek.retotecnico.model.customer.Customer;
+import com.seek.retotecnico.model.user.User;
 import com.seek.retotecnico.model.util.enums.Operation;
 import com.seek.retotecnico.model.util.enums.TechnicalMessage;
 import com.seek.retotecnico.model.util.exception.BusinessException;
-import com.seek.retotecnico.usecase.usermanager.CustomerManagerUseCase;
+import com.seek.retotecnico.usecase.usermanager.UserManagerUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,21 +23,21 @@ import static com.seek.retotecnico.api.util.UserManagerUtilApi.buildResponseBusi
 @Component
 @RequiredArgsConstructor
 public class SaveCustomer {
-    private final CustomerManagerUseCase customerManagerUseCase;
+    private final UserManagerUseCase userManagerUseCase;
 
-    public Mono<ServerResponse> execute(CreateCustomerRequestApi request, Operation operation) {
+    public Mono<ServerResponse> execute(SeekRequestApi request, Operation operation) {
         return Mono.just(request)
                 .flatMap(req -> validateAndProcessCustomerCreation(req, operation));
     }
 
-    private Mono<ServerResponse> validateAndProcessCustomerCreation(CreateCustomerRequestApi request, Operation operation) {
+    private Mono<ServerResponse> validateAndProcessCustomerCreation(SeekRequestApi request, Operation operation) {
         return RequestValidatorHandlerApi.validateRequest(request)
                 .filter(errors -> !errors.isEmpty())
                 .flatMap(errors -> buildResponseBadRequest(operation,request, errors))
                 .switchIfEmpty(Mono.defer(() -> processCustomerCreation(request, operation)));
     }
 
-    private Mono<ServerResponse> processCustomerCreation(CreateCustomerRequestApi request, Operation operation) {
+    private Mono<ServerResponse> processCustomerCreation(SeekRequestApi request, Operation operation) {
         return findCustomer(request)
                 .flatMap(existingCustomer -> buildBusinessErrorResponse(request, new BusinessException(TechnicalMessage.ERROR_CLIENT_EXIST)))
                 .switchIfEmpty(Mono.defer(() -> createCustomer(request)
@@ -45,29 +45,23 @@ public class SaveCustomer {
                 .onErrorResume(BusinessException.class, businessException -> buildBusinessErrorResponse(request, businessException));
     }
 
-    private Mono<Customer> findCustomer(CreateCustomerRequestApi request) {
-        return findOrCreateCustomer(request, customerManagerUseCase::findCustomerByDocumentId);
+    private Mono<User> findCustomer(SeekRequestApi request) {
+        return findOrCreateCustomer(request, userManagerUseCase::findUser);
     }
 
-    private Mono<Customer> createCustomer(CreateCustomerRequestApi request) {
-        return findOrCreateCustomer(request, customerManagerUseCase::saveCustomer);
-               // .flatMap(this::sendMessage);
+    private Mono<User> createCustomer(SeekRequestApi request) {
+        return findOrCreateCustomer(request, userManagerUseCase::saveUser);
     }
 
-   /* Mono<Customer> sendMessage(Customer customer) {
-        return sqsUseCase.sendMessage(buildMessage(customer))
-                .thenReturn(customer);
-    }*/
-
-    private Mono<Customer> findOrCreateCustomer(CreateCustomerRequestApi request, Function<Customer, Mono<Customer>> action) {
+    private Mono<User> findOrCreateCustomer(SeekRequestApi request, Function<User, Mono<User>> action) {
         return Mono.just(request)
-                .map(ClientRequestMapperApi.MAPPER::createCustomerRequestToClient)
+                .map(UserRequestMapperApi.MAPPER::saveUserRequestToClient)
                 .flatMap(action);
     }
-    private String buildMessage(Customer customer) {
-        return "{\"name\": " + customer.getName() + ", \"documentId\": \"" + customer.getDocumentId() + "\"}";
+    private String buildMessage(User user) {
+        return "{\"name\": " + user.getName() + ", \"documentId\": \"" + user.getEmail() + "\"}";
     }
-    private Mono<ServerResponse> buildBusinessErrorResponse(CreateCustomerRequestApi request, BusinessException exception) {
+    private Mono<ServerResponse> buildBusinessErrorResponse(SeekRequestApi request, BusinessException exception) {
         return buildResponseBusinessException(request, exception);
     }
 }

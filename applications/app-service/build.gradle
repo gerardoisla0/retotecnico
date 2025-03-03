@@ -5,7 +5,6 @@ dependencies {
     // Infrastructure - Helper
     implementation project(':validator')
     implementation project(':r2dbc')
-    implementation project( ':sqs-sender')
 
     // Infrastructure - Entry-Points
     implementation project( ':reactive-web')
